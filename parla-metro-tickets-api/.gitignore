@@ -1,0 +1,10 @@
+# Exlude bin and obj folder
+bin/
+obj/
+
+# IDEs
+.vscode/
+.idea/
+
+# Enviroment
+.env
