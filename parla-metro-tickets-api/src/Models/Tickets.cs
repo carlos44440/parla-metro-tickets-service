@@ -13,5 +13,6 @@ namespace parla_metro_tickets_api.src.Models
         public string Type { get; set; }
         public string Status { get; set; }
         public decimal AmountPaid { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
