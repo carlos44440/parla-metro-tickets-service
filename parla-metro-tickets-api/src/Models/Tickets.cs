@@ -2,17 +2,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace parla_metro_tickets_api.src.Models
 {
     public class Tickets
     {
-        public int Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+        
+        [BsonElement("idPassenger")]
         public string IdPassenger { get; set; }
+
+        [BsonElement("date")]
         public DateTime Date { get; set;}
+
+        [BsonElement("type")]
         public string Type { get; set; }
+
+        [BsonElement("status")]
         public string Status { get; set; }
+
+        [BsonElement("amountPaid")]
         public decimal AmountPaid { get; set; }
+
+        [BsonElement("isDeleted")]
         public bool IsDeleted { get; set; }
     }
 }

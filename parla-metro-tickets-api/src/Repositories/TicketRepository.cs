@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using parla_metro_tickets_api.src.Interfaces;
+using parla_metro_tickets_api.src.Models;
+using parla_metro_tickets_api.src.DTOs;
 
 namespace parla_metro_tickets_api.src.Repositories
 {
@@ -13,9 +16,19 @@ namespace parla_metro_tickets_api.src.Repositories
         {
             _tickets = context.GetCollection<Ticket>("Tickets");
         }
- 
-        public async Task<Ticket> CreateAsync(Ticket ticket)
+
+        public async Task<Ticket> CreateAsync(CreateTicketDto newTicket)
         {
+            var ticket = new Ticket
+            {
+                Id = newTicket.Id,
+                IdPassenger = newTicket.IdPassenger,
+                Date = newTicket.Date,
+                Type = newTicket.Type,
+                Status = newTicket.Status,
+                AmountPaid = newTicket.AmountPaid,
+                IsDeleted = false
+            };
             await _tickets.InsertOneAsync(ticket);
             return ticket;
         }
@@ -49,8 +62,8 @@ namespace parla_metro_tickets_api.src.Repositories
                 })
                 .FirstOrDefaultAsync();
         }
-      
-        public async Task<Ticket?> UpdateAsync(int id, Ticket ticket)
+
+        public async Task<Ticket?> UpdateAsync(int id, UpdateTicketDto updatedTicket)
         {
             var existingTicket = await GetByIdAsync(id);
 
@@ -67,31 +80,18 @@ namespace parla_metro_tickets_api.src.Repositories
             }
 
             //No se permite reactivar un ticket caducado.
-            if (existingTicket.Status.ToLower() == "caducado" && ticket.Status.ToLower() == "activo")
+            if (existingTicket.Status.ToLower() == "caducado" && updatedTicket.Status.ToLower() == "activo")
             {
                 throw new Exception("No se puede reactivar un ticket caducado.");
             }
 
-            //No se permite cambiar la Id del ticket.
-            if (existingTicket.Id != ticket.Id)
-            {
-                throw new Exception("No se puede cambiar la Id del ticket.");
-            }
+            existingTicket.Date = updatedTicket.Date;
+            existingTicket.Type = updatedTicket.Type;
+            existingTicket.Status = updatedTicket.Status;
+            existingTicket.AmountPaid = updatedTicket.AmountPaid;
 
-            //No se permite cambiar la Id del pasajero.
-            if (existingTicket.IdPassenger != ticket.IdPassenger)
-            {
-                throw new Exception("No se puede cambiar la Id del pasajero.");
-            }
-
-            //No se permite cambiar el IsDeleted.
-            if (existingTicket.IsDeleted != ticket.IsDeleted)
-            {
-                throw new Exception("No se puede cambiar el estado de eliminación de un ticket.");
-            }
-
-            await _tickets.ReplaceOneAsync(t => t.Id == id, ticket);
-            return ticket;
+            await _tickets.ReplaceOneAsync(t => t.Id == id, existingTicket);
+            return existingTicket;
         }
       
         public async Task<Ticket?> DeleteAsync(int id)
