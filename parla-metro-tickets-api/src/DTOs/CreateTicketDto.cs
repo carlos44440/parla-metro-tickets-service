@@ -9,21 +9,21 @@ namespace parla_metro_tickets_api.src.DTOs
     public class CreateTicketDto
     {
         [Required]
-        public string Id { get; set; }
+        public string Id { get; set; }  = null!;
         
         [Required]
-        public string IdPassenger { get; set; }
-
+        public string IdPassenger { get; set; }  = null!;
+ 
         [Required]
         public DateTime Date { get; set;} = DateTime.Now;
 
         [Required]
         [RegularExpression(@"Ida|Vuelta", ErrorMessage = "El tipo debe ser uno de los valores especificados.")]
-        public string Type { get; set; }
+        public string Type { get; set; }  = null!;
 
         [Required]
         [RegularExpression(@"Activo|Usado|Caducado", ErrorMessage = "El estado debe ser uno de los valores especificados.")]
-        public string Status { get; set; }
+        public string Status { get; set; }  = null!;
 
         [Required]
         [Range(0.01, double.MaxValue, ErrorMessage = "El monto pagado debe ser mayor que cero.")]

@@ -11,19 +11,19 @@ namespace parla_metro_tickets_api.src.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public string Id { get; set; } = null!; 
         
         [BsonElement("idPassenger")]
-        public string IdPassenger { get; set; }
+        public string IdPassenger { get; set; } = null!;
 
         [BsonElement("date")]
         public DateTime Date { get; set;}
 
         [BsonElement("type")]
-        public string Type { get; set; }
+        public string Type { get; set; } = null!;
 
         [BsonElement("status")]
-        public string Status { get; set; }
+        public string Status { get; set; } = null!;
 
         [BsonElement("amountPaid")]
         public decimal AmountPaid { get; set; }

@@ -5,21 +5,23 @@ using System.Threading.Tasks;
 using parla_metro_tickets_api.src.Interfaces;
 using parla_metro_tickets_api.src.Models;
 using parla_metro_tickets_api.src.DTOs;
+using MongoDB.Driver;
+using parla_metro_tickets_api.src.Data;
 
 namespace parla_metro_tickets_api.src.Repositories
 {
     public class TicketRepository : ITicketRepository
     {
-        private readonly IMongoCollection<Ticket> _tickets;
+        private readonly IMongoCollection<Tickets> _tickets;
 
         public TicketRepository(MongoDbContext context)
         {
-            _tickets = context.GetCollection<Ticket>("Tickets");
+            _tickets = context.GetCollection<Tickets>("Tickets");
         }
 
-        public async Task<Ticket> CreateAsync(CreateTicketDto newTicket)
+        public async Task<Tickets> CreateAsync(CreateTicketDto newTicket)
         {
-            var ticket = new Ticket
+            var ticket = new Tickets
             {
                 Id = newTicket.Id,
                 IdPassenger = newTicket.IdPassenger,
@@ -33,50 +35,52 @@ namespace parla_metro_tickets_api.src.Repositories
             return ticket;
         }
  
-        public async Task<Ticket?> GetByIdAsync(int id)
+        public async Task<GetTicketByIdDto?> GetByIdAsync(string id)
         {
-            var ticket = await _tickets.Find(t => t.Id == id && !t.IsDeleted)
-                .Project(t => new 
-                {
-                    t.Id,
-                    t.IdPassenger,
-                    t.Date,
-                    t.Type,
-                    t.AmountPaid,
-                })
-                .FirstOrDefaultAsync();
-            return ticket;
-        }
- 
-        public async Task<IEnumerable<Ticket>> GetAllAsync()
-        {
-            return await _tickets.Find(ticket => !ticket.IsDeleted)
-                .Project(ticket => new 
-                {
-                    ticket.Id,
-                    ticket.IdPassenger,
-                    ticket.Date,
-                    ticket.Type,
-                    ticket.Status,
-                    ticket.AmountPaid,
-                })
-                .FirstOrDefaultAsync();
+            var ticket = await _tickets.Find(t => t.Id == id && !t.IsDeleted).FirstOrDefaultAsync();
+            if (ticket == null)
+            {
+                return null;
+            }
+
+            var ticketDto = new GetTicketByIdDto
+            {
+                Id = ticket.Id,
+                IdPassenger = ticket.IdPassenger,
+                Date = ticket.Date,
+                Type = ticket.Type,
+                AmountPaid = ticket.AmountPaid
+            };
+            return ticketDto;
         }
 
-        public async Task<Ticket?> UpdateAsync(int id, UpdateTicketDto updatedTicket)
+        public async Task<IEnumerable<GetAllTicketsDto>> GetAllAsync()
         {
-            var existingTicket = await GetByIdAsync(id);
+            var tickets = await _tickets.Find(ticket => !ticket.IsDeleted).ToListAsync();
+            if (tickets == null || tickets.Count == 0)
+            {
+                return Enumerable.Empty<GetAllTicketsDto>();
+            }
+
+            return tickets.Select(ticket => new GetAllTicketsDto
+            {
+                Id = ticket.Id,
+                IdPassenger = ticket.IdPassenger,
+                Date = ticket.Date,
+                Type = ticket.Type,
+                Status = ticket.Status,
+                AmountPaid = ticket.AmountPaid
+            });
+        }
+
+        public async Task<Tickets?> UpdateAsync(string id, UpdateTicketDto updatedTicket)
+        {
+            var existingTicket = await _tickets.Find(t => t.Id == id && !t.IsDeleted).FirstOrDefaultAsync();
 
             //Verifica si el ticket existe.
             if (existingTicket == null)
             {
                 return null;
-            }
-
-            //No se permite actualizar un ticket eliminado.
-            if (existingTicket.IsDeleted)
-            {
-                throw new Exception("El ticket ha sido eliminado y no se puede actualizar.");
             }
 
             //No se permite reactivar un ticket caducado.
@@ -94,9 +98,9 @@ namespace parla_metro_tickets_api.src.Repositories
             return existingTicket;
         }
       
-        public async Task<Ticket?> DeleteAsync(int id)
+        public async Task<Tickets?> DeleteAsync(string id)
         {
-            var ticket = await GetByIdAsync(id);
+            var ticket = await _tickets.Find(t => t.Id == id && !t.IsDeleted).FirstOrDefaultAsync();
             if (ticket == null)
             {
                 return null;
