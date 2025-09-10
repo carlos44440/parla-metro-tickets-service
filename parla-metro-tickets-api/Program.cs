@@ -1,5 +1,7 @@
 using DotNetEnv;
 using parla_metro_tickets_api.src.Data;
+using parla_metro_tickets_api.src.Interfaces;
+using parla_metro_tickets_api.src.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,16 @@ var mongoSettings = new MongoDbSettings
 builder.Services.AddSingleton(new MongoDbContext(mongoSettings));
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 

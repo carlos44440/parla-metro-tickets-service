@@ -16,7 +16,7 @@ namespace parla_metro_tickets_api.src.Repositories
 
         public TicketRepository(MongoDbContext context)
         {
-            _tickets = context.GetCollection<Tickets>("Tickets");
+            _tickets = context.GetCollection<Tickets>("tickets");
         }
 
         public async Task<Tickets> CreateAsync(CreateTicketDto newTicket)
