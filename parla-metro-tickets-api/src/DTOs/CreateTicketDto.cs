@@ -12,7 +12,7 @@ namespace parla_metro_tickets_api.src.DTOs
         public string IdPassenger { get; set; }  = null!;
  
         [Required]
-        public DateTime Date { get; set;} = DateTime.Now;
+        public DateTime Date { get; set;}
 
         [Required]
         [RegularExpression(@"Ida|Vuelta", ErrorMessage = "El tipo debe ser uno de los valores 'Ida|Vuelta'.")]
