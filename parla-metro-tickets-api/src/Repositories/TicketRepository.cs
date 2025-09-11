@@ -21,6 +21,20 @@ namespace parla_metro_tickets_api.src.Repositories
 
         public async Task<Tickets> CreateAsync(CreateTicketDto newTicket)
         {
+            var tickets = await _tickets.Find(t => t.IdPassenger == newTicket.IdPassenger && !t.IsDeleted).ToListAsync();
+
+            if (tickets != null && tickets.Count > 0)
+            {
+                for (int i = 0; i < tickets.Count; i++)
+                {
+                    if (tickets[i].Status.ToLower() == newTicket.Status.ToLower() && tickets[i].Type.ToLower() == newTicket.Type.ToLower() &&
+                        tickets[i].Date.Date == newTicket.Date.Date && tickets[i].AmountPaid == newTicket.AmountPaid)
+                    {
+                        throw new Exception("Ya existe un ticket con los mismos datos.");
+                    }
+                }
+            }
+
             var ticket = new Tickets
             {
                 IdPassenger = newTicket.IdPassenger,

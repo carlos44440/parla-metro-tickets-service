@@ -22,7 +22,15 @@ namespace parla_metro_tickets_api.src.Controllers
         public async Task<IActionResult> CreateTicket([FromForm] CreateTicketDto newTicket)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-
+            if (newTicket.Date < DateTime.Now.AddMinutes(-5))
+            {
+                return BadRequest(new { message = "La fecha no puede ser en el pasado." });
+            }
+            if (newTicket.Date > DateTime.Now.AddMinutes(5))
+            {
+                return BadRequest(new { message = "La fecha no puede ser en el futuro." });
+            }
+            
             try
             {
                 var createdTicket = await _ticketRepository.CreateAsync(newTicket);
