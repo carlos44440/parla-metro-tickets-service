@@ -9,9 +9,22 @@ namespace parla_metro_tickets_api.src.Data
 
         public MongoDbContext(MongoDbSettings settings)
         {
-            var client = new MongoClient(settings.ConnectionString);
-            _database = client.GetDatabase(settings.DatabaseName);
-            _client = client;
+            try
+            {
+                var clientSettings = MongoClientSettings.FromConnectionString(settings.ConnectionString);
+                clientSettings.ServerSelectionTimeout = TimeSpan.FromSeconds(30);
+                clientSettings.ConnectTimeout = TimeSpan.FromSeconds(30);
+                
+                _client = new MongoClient(clientSettings);
+                _database = _client.GetDatabase(settings.DatabaseName);
+                
+                _client.ListDatabaseNames();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error de conexión MongoDB: {ex.Message}");
+                throw;
+            }
         }
 
         public IMongoCollection<T> GetCollection<T>(string name)

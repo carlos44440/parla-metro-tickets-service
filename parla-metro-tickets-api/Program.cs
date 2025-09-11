@@ -1,4 +1,6 @@
+using System.Net;
 using DotNetEnv;
+using Microsoft.AspNetCore.Mvc.Routing;
 using parla_metro_tickets_api.src.Data;
 using parla_metro_tickets_api.src.Interfaces;
 using parla_metro_tickets_api.src.Repositories;
@@ -12,8 +14,8 @@ Env.Load();
 
 var mongoSettings = new MongoDbSettings
 {
-    ConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING")!,
-    DatabaseName = Environment.GetEnvironmentVariable("MONGO_DATABASE")!
+    ConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING") ?? throw new InvalidOperationException("MONGO_CONNECTION_STRING environment variable is not set."),
+    DatabaseName = Environment.GetEnvironmentVariable("MONGO_DATABASE") ?? throw new InvalidOperationException("MONGO_DATABASE environment variable is not set.")
 };
 
 builder.Services.AddSingleton(new MongoDbContext(mongoSettings));
@@ -39,6 +41,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
 app.UseHttpsRedirection();
+app.UseCors("AllowAll");
 app.MapControllers();
 app.Run();

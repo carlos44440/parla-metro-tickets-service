@@ -7,10 +7,7 @@ using System.ComponentModel.DataAnnotations;
 namespace parla_metro_tickets_api.src.DTOs
 {
     public class CreateTicketDto
-    {
-        [Required]
-        public string Id { get; set; }  = null!;
-        
+    {   
         [Required]
         public string IdPassenger { get; set; }  = null!;
  

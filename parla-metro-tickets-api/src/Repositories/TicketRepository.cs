@@ -23,7 +23,6 @@ namespace parla_metro_tickets_api.src.Repositories
         {
             var ticket = new Tickets
             {
-                Id = newTicket.Id,
                 IdPassenger = newTicket.IdPassenger,
                 Date = newTicket.Date,
                 Type = newTicket.Type,
