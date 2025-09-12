@@ -1,0 +1,7 @@
+services:
+  api:
+    image: "c4rloss44440/tickets-api-deploy"
+    ports:
+      - "3000:8080"
+    env_file:
+      - .env
