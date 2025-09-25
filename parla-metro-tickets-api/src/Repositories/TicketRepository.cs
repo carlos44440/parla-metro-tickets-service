@@ -102,6 +102,31 @@ namespace parla_metro_tickets_api.src.Repositories
                 throw new Exception("No se puede reactivar un ticket caducado.");
             }
 
+            if (existingTicket.Status.ToLower() == "caducado" && updatedTicket.Status.ToLower() == "usado")
+            {
+                throw new Exception("No se permite cambiar el estado de un ticket caducado.");
+            }
+
+            if (existingTicket.Status.ToLower() == "usado" && updatedTicket.Status.ToLower() == "activo")
+            {
+                throw new Exception("No se puede reactivar un ticket usado.");
+
+            }
+
+            var tickets = await _tickets.Find(t => t.IdPassenger == existingTicket.IdPassenger && !t.IsDeleted).ToListAsync();
+
+            if (tickets != null && tickets.Count > 0)
+            {
+                for (int i = 0; i < tickets.Count; i++)
+                {
+                    if (tickets[i].Status.ToLower() == updatedTicket.Status.ToLower() && tickets[i].Type.ToLower() == updatedTicket.Type.ToLower() &&
+                        tickets[i].Date.Date == updatedTicket.Date.Date && tickets[i].AmountPaid == updatedTicket.AmountPaid)
+                    {
+                        throw new Exception("Ya existe un ticket con los mismos datos.");
+                    }
+                }
+            }
+
             existingTicket.Date = updatedTicket.Date;
             existingTicket.Type = updatedTicket.Type;
             existingTicket.Status = updatedTicket.Status;
