@@ -35,7 +35,7 @@ namespace parla_metro_tickets_api.src.Controllers
         }
 
         [HttpGet("api/tickets/{id}")]
-        public async Task<IActionResult> GetTicketById(string id)
+        public async Task<IActionResult> GetTicketById(Guid id)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace parla_metro_tickets_api.src.Controllers
         }
 
         [HttpPut("api/tickets/{id}")]
-        public async Task<IActionResult> UpdateTicket(string id, [FromForm] UpdateTicketDto updatedTicket)
+        public async Task<IActionResult> UpdateTicket(Guid id, [FromForm] UpdateTicketDto updatedTicket)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -81,7 +81,7 @@ namespace parla_metro_tickets_api.src.Controllers
         }
 
         [HttpDelete("api/tickets/{id}")]
-        public async Task<IActionResult> DeleteTicket(string id)
+        public async Task<IActionResult> DeleteTicket(Guid id)
         {
             try
             {

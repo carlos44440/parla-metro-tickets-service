@@ -48,9 +48,9 @@ namespace parla_metro_tickets_api.src.Repositories
             return ticket;
         }
  
-        public async Task<GetTicketByIdDto?> GetByIdAsync(string id)
+        public async Task<GetTicketByIdDto?> GetByIdAsync(Guid ticketId)
         {
-            var ticket = await _tickets.Find(t => t.Id == id && !t.IsDeleted).FirstOrDefaultAsync();
+            var ticket = await _tickets.Find(t => t.TicketID == ticketId && !t.IsDeleted).FirstOrDefaultAsync();
             if (ticket == null)
             {
                 return null;
@@ -58,7 +58,7 @@ namespace parla_metro_tickets_api.src.Repositories
 
             var ticketDto = new GetTicketByIdDto
             {
-                Id = ticket.Id,
+                TicketID = ticket.TicketID,
                 IdPassenger = ticket.IdPassenger,
                 Date = ticket.Date,
                 Type = ticket.Type,
@@ -77,7 +77,7 @@ namespace parla_metro_tickets_api.src.Repositories
 
             return tickets.Select(ticket => new GetAllTicketsDto
             {
-                Id = ticket.Id,
+                TicketID = ticket.TicketID,
                 IdPassenger = ticket.IdPassenger,
                 Date = ticket.Date,
                 Type = ticket.Type,
@@ -86,9 +86,9 @@ namespace parla_metro_tickets_api.src.Repositories
             });
         }
 
-        public async Task<Tickets?> UpdateAsync(string id, UpdateTicketDto updatedTicket)
+        public async Task<Tickets?> UpdateAsync(Guid ticketId, UpdateTicketDto updatedTicket)
         {
-            var existingTicket = await _tickets.Find(t => t.Id == id && !t.IsDeleted).FirstOrDefaultAsync();
+            var existingTicket = await _tickets.Find(t => t.TicketID == ticketId && !t.IsDeleted).FirstOrDefaultAsync();
 
             //Verifica si el ticket existe.
             if (existingTicket == null)
@@ -132,19 +132,19 @@ namespace parla_metro_tickets_api.src.Repositories
             existingTicket.Status = updatedTicket.Status;
             existingTicket.AmountPaid = updatedTicket.AmountPaid;
 
-            await _tickets.ReplaceOneAsync(t => t.Id == id, existingTicket);
+            await _tickets.ReplaceOneAsync(t => t.TicketID == ticketId, existingTicket);
             return existingTicket;
         }
       
-        public async Task<Tickets?> DeleteAsync(string id)
+        public async Task<Tickets?> DeleteAsync(Guid ticketId)
         {
-            var ticket = await _tickets.Find(t => t.Id == id && !t.IsDeleted).FirstOrDefaultAsync();
+            var ticket = await _tickets.Find(t => t.TicketID == ticketId && !t.IsDeleted).FirstOrDefaultAsync();
             if (ticket == null)
             {
                 return null;
             }
             ticket.IsDeleted = true;
-            await _tickets.ReplaceOneAsync(t => t.Id == id, ticket);
+            await _tickets.ReplaceOneAsync(t => t.TicketID == ticketId, ticket);
             return ticket;
         }
     }

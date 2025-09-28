@@ -13,15 +13,15 @@ namespace parla_metro_tickets_api.src.Interfaces
         Task<Tickets> CreateAsync(CreateTicketDto newtTicket);
 
         // Obtener un ticket por su Id
-        Task<GetTicketByIdDto?> GetByIdAsync(string id);
+        Task<GetTicketByIdDto?> GetByIdAsync(Guid ticketId);
 
         // Listar todos los tickets
         Task<IEnumerable<GetAllTicketsDto>> GetAllAsync();
 
         // Actualizar un ticket existente
-        Task<Tickets?> UpdateAsync(string id, UpdateTicketDto updatedTicket);
+        Task<Tickets?> UpdateAsync(Guid ticketId, UpdateTicketDto updatedTicket);
 
         // Eliminar un ticket por Id
-        Task<Tickets?> DeleteAsync(string id);
+        Task<Tickets?> DeleteAsync(Guid ticketId);
     }
 }

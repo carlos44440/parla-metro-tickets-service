@@ -7,7 +7,7 @@ namespace parla_metro_tickets_api.src.DTOs
 {
     public class GetAllTicketsDto
     {
-        public string Id { get; set; } = null!;
+        public Guid TicketID { get; set; }
         
         public string IdPassenger { get; set; }  = null!;
  
