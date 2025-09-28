@@ -86,10 +86,11 @@ namespace parla_metro_tickets_api.src.Repositories
             // Filtrado por texto
             if (!string.IsNullOrEmpty(query.textFilter))
             {
-                tickets = tickets.Where(t => t.IdPassenger.ToString().Contains(query.textFilter) ||
+                tickets = tickets.Where(t => t.TicketID.ToString().Contains(query.textFilter) ||
+                                             t.IdPassenger.ToString().Contains(query.textFilter) ||
                                              t.Date.ToString().Contains(query.textFilter) ||
-                                             t.Type.Contains(query.textFilter, StringComparison.OrdinalIgnoreCase) ||
-                                             t.Status.Contains(query.textFilter, StringComparison.OrdinalIgnoreCase) ||
+                                             t.Type.ToLower().Contains(query.textFilter.ToLower()) ||
+                                             t.Status.ToLower().Contains(query.textFilter.ToLower()) ||
                                              t.AmountPaid.ToString().Contains(query.textFilter));
             }
 
