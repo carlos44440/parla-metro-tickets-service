@@ -84,19 +84,34 @@ git clone <URL_DEL_REPOSITORIO>
 cd <CARPETA_DEL_PROYECTO>
 ```
 
-2. Construir la imagen de Docker:
+2. Configurar las variables de entorno:
+
+- Duplicar el archivo '.env.example' y renombrarlo a '.env':
+
+```bash
+cp .env.example .env
+```
+
+- Editar .env y agregar las siguientes claves para el correcto funcionamiento del proyecto:
+
+```bash
+MONGO_CONNECTION_STRING=mongodb+srv://carlosarauco_db_user:Carlos123.@cluster0.pxjn1ah.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+MONGO_DATABASE=tickets-service
+```
+
+3. Construir la imagen de Docker:
 
 ```bash
 docker build -t c4rloss44440/tickets-api-deploy .
 ```
 
-3. Levantar el contenedor:
+4. Levantar el contenedor:
 
 ```bash
 docker compose up
 ```
 
-4. Acceder a la documentación y probar la API:
+5. Acceder a la documentación y probar la API:
    [http://localhost:3000/swagger/index.html](http://localhost:3000/swagger/index.html)
 
 ## Ejecución en la nube
