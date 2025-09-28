@@ -12,7 +12,7 @@ Permite registrar un nuevo boleto para un pasajero, asegurando que cada registro
 
 **Información registrada:**
 
-- ID del ticket (asignacion automatica)
+- ID del ticket (asignacion automatica - UUIDv4)
 - ID del pasajero (referencia al Usuario)
 - Fecha y hora de emisión del ticket
 - Tipo de ticket (ida o vuelta)
@@ -21,7 +21,7 @@ Permite registrar un nuevo boleto para un pasajero, asegurando que cada registro
 
 ### Visualizar tickets
 
-Permite consultar todos los boletos registrados.
+Permite consultar todos los boletos registrados aplicando filtros y ordenamiento.
 
 **Datos mostrados:**
 
