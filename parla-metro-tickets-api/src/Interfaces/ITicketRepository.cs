@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using parla_metro_tickets_api.src.DTOs;
 using parla_metro_tickets_api.src.Helper;
 using parla_metro_tickets_api.src.Models;
