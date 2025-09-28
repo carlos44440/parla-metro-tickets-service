@@ -7,6 +7,7 @@ using parla_metro_tickets_api.src.Models;
 using parla_metro_tickets_api.src.DTOs;
 using MongoDB.Driver;
 using parla_metro_tickets_api.src.Data;
+using parla_metro_tickets_api.src.Helper;
 
 namespace parla_metro_tickets_api.src.Repositories
 {
@@ -67,15 +68,66 @@ namespace parla_metro_tickets_api.src.Repositories
             return ticketDto;
         }
 
-        public async Task<IEnumerable<GetAllTicketsDto>> GetAllAsync()
+        public async Task<IEnumerable<GetAllTicketsDto>> GetAllAsync(QueryObject query)
         {
-            var tickets = await _tickets.Find(ticket => !ticket.IsDeleted).ToListAsync();
-            if (tickets == null || tickets.Count == 0)
+            var tickets = _tickets.AsQueryable().Where(t => !t.IsDeleted);
+
+            if (!string.IsNullOrEmpty(query.textFilter))
             {
-                return Enumerable.Empty<GetAllTicketsDto>();
+                tickets = tickets.Where(t => t.IdPassenger.ToString().Contains(query.textFilter) ||
+                                               t.Date.ToString().Contains(query.textFilter) ||
+                                               t.Type.Contains(query.textFilter, StringComparison.OrdinalIgnoreCase) ||
+                                               t.Status.Contains(query.textFilter, StringComparison.OrdinalIgnoreCase) ||
+                                               t.AmountPaid.ToString().Contains(query.textFilter));
             }
 
-            return tickets.Select(ticket => new GetAllTicketsDto
+            if (!string.IsNullOrEmpty(query.type))
+            {
+                var validTypes = new[] { "Ida", "Vuelta" };
+
+                if (!validTypes.Contains(query.type))
+                {
+                    throw new Exception("Tipo de ticket incorrecto");
+                }
+
+                tickets = tickets.Where(t => t.Type.ToLower() == query.type.ToLower());
+            }
+
+            if (!string.IsNullOrEmpty(query.status))
+            {
+                // Se crea una lista con los estados validos.
+                var validStatuses = new[] { "Activo", "Usado", "Caducado" };
+
+                if (!validStatuses.Contains(query.status))
+                {
+                    throw new Exception("Estado incorrecto");
+                }
+
+                tickets = tickets.Where(t => t.Status.ToLower() == query.status.ToLower());
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.sortByAmountPaid))
+            {
+                if (query.sortByAmountPaid.Equals("AmountPaid", StringComparison.OrdinalIgnoreCase))
+                {
+                    tickets = query.isDescendingAmountPaid ? tickets.OrderByDescending(x => x.AmountPaid) : tickets.OrderBy(x => x.AmountPaid);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.sortByDate))
+            {
+                if (query.sortByDate.Equals("Date", StringComparison.OrdinalIgnoreCase))
+                {
+                    tickets = query.isDescendingDate ? tickets.OrderByDescending(x => x.Date) : tickets.OrderBy(x => x.Date);
+                }
+            }
+
+            if(!tickets.Any())
+            {
+                throw new Exception("No se encontraron tickets");
+            }
+
+            var tickets1 = tickets.Select(ticket => new GetAllTicketsDto
             {
                 TicketID = ticket.TicketID,
                 IdPassenger = ticket.IdPassenger,
@@ -84,6 +136,8 @@ namespace parla_metro_tickets_api.src.Repositories
                 Status = ticket.Status,
                 AmountPaid = ticket.AmountPaid
             });
+            
+            return await Task.FromResult(tickets1);
         }
 
         public async Task<Tickets?> UpdateAsync(Guid ticketId, UpdateTicketDto updatedTicket)

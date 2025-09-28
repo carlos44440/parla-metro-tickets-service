@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using parla_metro_tickets_api.src.DTOs;
+using parla_metro_tickets_api.src.Helper;
 using parla_metro_tickets_api.src.Interfaces;
 
 namespace parla_metro_tickets_api.src.Controllers
@@ -50,11 +51,12 @@ namespace parla_metro_tickets_api.src.Controllers
         }
 
         [HttpGet("api/tickets")]
-        public async Task<IActionResult> GetAllTickets()
+        public async Task<IActionResult> GetAllTickets([FromQuery] QueryObject query)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                var tickets = await _ticketRepository.GetAllAsync();
+                var tickets = await _ticketRepository.GetAllAsync(query);
                 return Ok(tickets);
             }
             catch (Exception ex)

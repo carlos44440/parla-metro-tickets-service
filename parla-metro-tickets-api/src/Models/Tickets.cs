@@ -11,9 +11,10 @@ namespace parla_metro_tickets_api.src.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; } = null!; 
+        public string Id { get; set; } = null!;
 
         [BsonElement("ticketID")]
+        [BsonRepresentation(BsonType.String)]
         public Guid TicketID { get; set; } = Guid.NewGuid();
         
         [BsonElement("idPassenger")]
